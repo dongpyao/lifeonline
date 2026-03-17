@@ -42,3 +42,18 @@ This project is configured for easy deployment on [Netlify](https://www.netlify.
    - `APP_URL`: Your Netlify site URL (optional, used for self-referential links).
 
 The project already includes a `netlify.toml` file to automate these settings.
+
+## Deploy to Zeabur (Recommended for China Access)
+
+[Zeabur](https://zeabur.com/) is recommended for users in China as it provides better connectivity and performance.
+
+### Deployment Steps:
+
+1. Log in to [Zeabur](https://zeabur.com/).
+2. Click **"Create Project"** and select **"Deploy Service"**.
+3. Choose **"GitHub"** and authorize Zeabur to access your `lifeonline` repository.
+4. Select the repository and Zeabur will automatically detect the Vite project.
+5. In the service settings, go to **"Variables"** and add:
+   - `GEMINI_API_KEY`: Your Gemini API key.
+6. Zeabur will automatically build and deploy your project.
+7. Once deployed, you can bind a free `*.zeabur.app` domain or your custom domain.
