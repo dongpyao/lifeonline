@@ -1,0 +1,49 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    // Collection: lifelines
+    // Fields:
+    //   - uid: string (required) - Owner ID
+    //   - displayName: string (required) - Display name
+    //   - startAge: number (required)
+    //   - endAge: number (required)
+    //   - currentAge: number (required)
+    //   - points: list (required) - [{age: number, value: number}]
+    //   - milestones: list (optional) - [{age: number, label: string, description: string}]
+    //   - createdAt: timestamp (required)
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isValidLifeline(data) {
+      return data.uid is string &&
+             data.displayName is string && data.displayName.size() < 100 &&
+             data.startAge is number &&
+             data.endAge is number &&
+             data.currentAge is number &&
+             data.points is list && data.points.size() < 200 &&
+             data.color is string && data.color.matches("^#[0-9A-Fa-f]{6}$") &&
+             data.createdAt is timestamp;
+    }
+
+    match /lifelines/{lifelineId} {
+      allow read: if true; // Publicly viewable gallery
+      allow create: if isAuthenticated() && 
+                      request.resource.data.uid == request.auth.uid &&
+                      isValidLifeline(request.resource.data);
+      allow update: if isOwner(resource.data.uid) && 
+                      request.resource.data.uid == resource.data.uid &&
+                      isValidLifeline(request.resource.data);
+      allow delete: if isOwner(resource.data.uid);
+    }
+  }
+}
